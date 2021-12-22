@@ -1,0 +1,45 @@
+<html>
+ <head>
+    <style>
+    /* Set additional styling options for the columns*/
+    .column {
+    float: left;
+    width: 25%;
+    }
+
+    .row:after {
+    content: "";
+    display: table;
+    clear: both;
+    }
+    </style>
+ </head>
+ <body>
+    <div class="row">
+      <div class="column">
+        <h1>Most Offensives French Clubs</h1>
+        {% for your_list_element in mofc %}
+          <p>{{ your_list_element }} </p>
+        {% endfor %}
+      </div>
+      <div class="column">
+        <h1>Most Denfinsives French Clubs</h1>
+        {% for your_list_element in mdfc %}
+          <p>{{ your_list_element }} </p>
+        {% endfor %}
+      </div>
+      <div class="column">
+        <h1>Most Offensives English Clubs</h1>
+        {% for your_list_element in moec %}
+          <p>{{ your_list_element }} </p>
+        {% endfor %}
+      </div>
+      <div class="column">
+        <h1>Most Deffensives English Clubs</h1>
+          {% for your_list_element in mdec %}
+            <p>{{ your_list_element }} </p>
+          {% endfor %}
+      </div>
+    </div>
+ </body>
+</html>
