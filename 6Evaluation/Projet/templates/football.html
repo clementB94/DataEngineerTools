@@ -1,45 +1,30 @@
 <html>
- <head>
-    <style>
-    /* Set additional styling options for the columns*/
-    .column {
-    float: left;
-    width: 25%;
-    }
+<head>
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script>
+      function cb(selection) {
+          $.getJSON({
+              url: "/callback", data: { 'data': selection }, success: function (result) {
+                  Plotly.newPlot('chart', result, {staticPlot: true});;
+              }
+          });
+      }
+  </script>
+</head>
 
-    .row:after {
-    content: "";
-    display: table;
-    clear: both;
-    }
-    </style>
- </head>
- <body>
-    <div class="row">
-      <div class="column">
-        <h1>Most Offensives French Clubs</h1>
-        {% for your_list_element in mofc %}
-          <p>{{ your_list_element }} </p>
-        {% endfor %}
-      </div>
-      <div class="column">
-        <h1>Most Denfinsives French Clubs</h1>
-        {% for your_list_element in mdfc %}
-          <p>{{ your_list_element }} </p>
-        {% endfor %}
-      </div>
-      <div class="column">
-        <h1>Most Offensives English Clubs</h1>
-        {% for your_list_element in moec %}
-          <p>{{ your_list_element }} </p>
-        {% endfor %}
-      </div>
-      <div class="column">
-        <h1>Most Deffensives English Clubs</h1>
-          {% for your_list_element in mdec %}
-            <p>{{ your_list_element }} </p>
-          {% endfor %}
-      </div>
-    </div>
- </body>
+<body style="font-family:arial, sans-serif">
+  <h1>Football Stats</h1>
+  <h2>Choose your league</h2>
+  <p>Make sure you spell it correctly, available leagues : 'ligue1', 'premiereleague', 'bundesliga', 'laliga', 'seria', 'championsleague', 'europaleague'</p>
+  <input type="text" id="fname" name="fname" onchange="cb(this.value)">
+  <div id="chart" class="chart"></div>
+</body>
+
+<script>
+  d = {{ graphJSON | safe }};
+  //d.config={staticPlot: true};
+  Plotly.newPlot('chart', d, {});
+  
+</script>
 </html>
