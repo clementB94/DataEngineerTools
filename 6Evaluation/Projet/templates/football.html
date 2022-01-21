@@ -17,8 +17,18 @@
   <h1>Football Stats</h1>
   <h2>Choose your league</h2>
   <p>Make sure you spell it correctly, available leagues : 'ligue1', 'premiereleague', 'bundesliga', 'laliga', 'seria', 'championsleague', 'europaleague'</p>
-  <input type="text" id="fname" name="fname" onchange="cb(this.value)">
-  <h2>Average goals and taken goals</h2>
+
+  <input list="browsers" type="text" id="fname" name="fname" onchange="cb(this.value)">
+    <datalist id="browsers">
+      <option value="ligue1">
+      <option value="laliga">
+      <option value="bundesliga">
+      <option value="seria">
+      <option value="championsleague">
+      <option value="europaleague"></option>
+    </datalist>
+  <a href = "javascript:;" onclick = "this.href='/getPlotCSV/' + document.getElementById('fname').value">Click here to download csv file.</a>
+
   <div id="chart" class="chart"></div>
 </body>
 
