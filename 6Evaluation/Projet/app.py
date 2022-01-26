@@ -1,11 +1,9 @@
 from flask import Flask, make_response, render_template, request, redirect
-import pymongo
 from pymongo import MongoClient
 
 import pandas as pd
 import plotly
 import plotly.graph_objects as go
-import plotly.express as px
 from plotly.subplots import make_subplots
 import json
 
@@ -15,6 +13,8 @@ from insert_db import insert_db
 app = Flask(__name__)
 
 client = MongoClient(host="mongodb", port=27017)
+
+available_league = ['ligue1', 'premiereleague', 'seria', 'laliga', 'bundesliga', 'championsleague', 'europaleague']
 
 def get_db():
     db = client['football_db']
@@ -31,31 +31,39 @@ def redirect_to_base():
 @app.route('/callback', methods=['POST', 'GET'])
 def cb():
     # callback so that the graphs are updated
-    return get_strongest_club(request.args.get('data'))
+    return get_strongest_club(request.args.get('data'), int(request.args.get('range')))
 
 @app.route('/football')
-def fetch_sku():
+def render():
     # render a html file with a graph
     return render_template("football.html", graphJSON=get_strongest_club())
 
 @app.route('/getPlotCSV/<ligue>', methods=['POST', 'GET'])
 def dl(ligue):
     # Download a csv file with all rows in the mongodb document
-    db = client['football_db']
-    cursor = db[ligue].find()
-    df =  pd.DataFrame(list(cursor))
-    csv = df.to_csv(index=False)
-    response = make_response(csv)
-    cd = 'attachment; filename='+ligue+'.csv'
-    response.headers['Content-Disposition'] = cd 
-    response.mimetype='text/csv'
+    if ligue in available_league: 
+        db = client['football_db']
+        cursor = db[ligue].find()
+        df =  pd.DataFrame(list(cursor)).iloc[: , 1:]
+        csv = df.to_csv(index=False)
+        response = make_response(csv)
+        cd = 'attachment; filename='+ligue+'.csv'
+        response.headers['Content-Disposition'] = cd 
+        response.mimetype='text/csv'
 
-    return response
+        return response
 
+    else:
+        return redirect("http://localhost:5000/football", code=302)
+
+@app.route('/getPlotCSV/')
+def redirection():
+    # redirect to the main page
+    return redirect("http://localhost:5000/football", code=302)
 
 ### Function that take a league and return a figure with plotly graphs (Bar, Scatter and Table)
 
-def get_strongest_club(ligue='ligue1'):
+def get_strongest_club(ligue='ligue1', size=25):
 
     db = get_db()
 
@@ -81,17 +89,17 @@ def get_strongest_club(ligue='ligue1'):
 
         # create figure
         fig = make_subplots(rows=2, cols=1, vertical_spacing=0.1, specs=[[{"type": "bar"}], [{"type": "table"}]])
-        fig.add_trace(go.Bar(name='Average Goals By Club', x=df['Club'][0:25], y=df['average_goals'][0:25]), row=1, col=1)
-        fig.add_trace(go.Bar(name='Average Taken Goals By Club', x=df['Club'][0:25], y=df['average_taken_goals'][0:25]), row=1, col=1)
-        fig.add_trace(go.Scatter(name='Average Goal Diff By Club', x=df['Club'][0:25], y=df['diff'][0:25]), row=1, col=1)
+        fig.add_trace(go.Bar(name='Average Goals By Club', x=df['Club'][0:size], y=df['average_goals'][0:size]), row=1, col=1)
+        fig.add_trace(go.Bar(name='Average Taken Goals By Club', x=df['Club'][0:size], y=df['average_taken_goals'][0:size]), row=1, col=1)
+        fig.add_trace(go.Scatter(name='Average Goal Diff By Club', x=df['Club'][0:size], y=df['diff'][0:size]), row=1, col=1)
         fig.update_layout(barmode='group')
 
         fig.add_trace(go.Table(columnwidth=[40, 40, 40, 40, 40],
                                         header=dict(values=['Club', 'Average Goals', 'Average Taken Goals',
-                                        'Average Goal Difference', 'average points by edition']),
-                                        cells=dict(values=[df.Club, df.average_goals,
-                                                           df.average_taken_goals, df['diff'],
-                                                           df.average_points], format = [None, ",.3f"])), row=2, col=1)
+                                        'Average Goal Difference', 'Average Points by Edition']),
+                                        cells=dict(values=[df.Club[0:size], df.average_goals[0:size],
+                                                           df.average_taken_goals[0:size], df['diff'][0:size],
+                                                           df.average_points[0:size]], format = [None, ",.3f"])), row=2, col=1)
         fig.update_layout(
             height=1000,
             title_text="Best team of : " + str(ligue),
@@ -117,17 +125,17 @@ def get_strongest_club(ligue='ligue1'):
         
         # create figure
         fig = make_subplots(rows=2, cols=1, vertical_spacing=0.1, specs=[[{"type": "bar"}],[{"type": "table"}]])
-        fig.add_trace(go.Bar(name='Average Goals By Club', x=df['Club'][0:25], y=df['Average_Goals_By_Club'][0:25]), row=1, col=1)
-        fig.add_trace(go.Bar(name='Average Taken Goals By Club', x=df['Club'][0:25], y=df['Average_Taken_Goals_By_Club'][0:25]), row=1, col=1)
-        fig.add_trace(go.Scatter(name='Average Goals Diff By Club', x=df['Club'][0:25], y=df['diff'][0:25]), row=1, col=1)
+        fig.add_trace(go.Bar(name='Average Goals By Club', x=df['Club'][0:size], y=df['Average_Goals_By_Club'][0:size]), row=1, col=1)
+        fig.add_trace(go.Bar(name='Average Taken Goals By Club', x=df['Club'][0:size], y=df['Average_Taken_Goals_By_Club'][0:size]), row=1, col=1)
+        fig.add_trace(go.Scatter(name='Average Goals Diff By Club', x=df['Club'][0:size], y=df['diff'][0:size]), row=1, col=1)
         fig.update_layout(barmode='group')
 
         fig.add_trace(go.Table(columnwidth=[45, 45, 45, 45, 45],
                                         header=dict(values=['Club', 'Average Goals', 'Average Taken Goals',
                                         'Average Goal Difference', 'Average Odds']),
-                                        cells=dict(values=[df.Club, df.Average_Goals_By_Club,
-                                                           df.Average_Taken_Goals_By_Club, df['diff'],
-                                                           df.average_odds_by_clubs], format = [None, ",.3f"])), row=2, col=1)
+                                        cells=dict(values=[df.Club[0:size], df.Average_Goals_By_Club[0:size],
+                                                           df.Average_Taken_Goals_By_Club[0:size], df['diff'][0:size],
+                                                           df.average_odds_by_clubs[0:size]], format = [None, ",.3f"])), row=2, col=1)
 
         fig.update_layout(
             height=1000,
