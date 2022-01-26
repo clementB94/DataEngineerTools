@@ -8,8 +8,15 @@ Avaiable league are french Ligue 1, spanish LaLiga, italian Serie A, german Bund
 
 
 # How to use it ?
+```
+git clone https://github.com/clementB94/DataEngineerTools.git
+cd DataEngineerTools
+cd 6Evaluation
+cd Projet
+docker-compose up
+```
 
-Download or clone the project with "git clone https://github.com/clementB94/DataEngineerTools/tree/master/6Evaluation/Projet" and type "docker-compose up" in your terminal (download Docker if required) then wait a few seconds/minutes so that the project is set up and open "http://localhost:5000/football" in your browser.  
+Download or clone the project and type "docker-compose up" in your terminal (download Docker if required) then wait a few seconds/minutes so that the project is set up and open "http://localhost:5000/football" in your browser.  
 
 
 # Reproductibility
