@@ -1,5 +1,5 @@
 
-# What is it
+# What is it ?
 
 This is a Web app which retrieve european football data from 2012 to 2019, you can select a league then visualize who the best teams are and download the data in csv format. 
 
@@ -7,7 +7,7 @@ Avaiable league are french Ligue 1, spanish LaLiga, italian Serie A, german Bund
 
 
 
-# How to use it
+# How to use it ?
 
 Download or clone the project with "git clone https://github.com/clementB94/DataEngineerTools/tree/master/6Evaluation/Projet" and type "docker-compose up" in your terminal (download Docker if required) then wait a few seconds/minutes so that the project is set up and open "http://localhost:5000/football" in your browser.  
 
