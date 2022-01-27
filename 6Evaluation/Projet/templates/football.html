@@ -1,26 +1,34 @@
 <html>
-<head>
+<head>  
+  <style>
+    h1 {
+      text-align: center;
+    }
+  </style>
   <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
   <script>
-      function cb(selection) {
+      function cb(selection1, selection2) {
+        const league = ["ligue1", "premiereleague", "laliga", "bundesliga", "seria", "championsleague", "europaleague"];
+        if (league.includes(selection1)){
           $.getJSON({
-              url: "/callback", data: { 'data': selection }, success: function (result) {
+              url: "/callback", data: {'data': selection1, 'range': selection2}, success: function (result) {
                   Plotly.newPlot('chart', result, {staticPlot: true});;
               }
           });
-      }
+      }}
   </script>
 </head>
 
 <body style="font-family:arial, sans-serif">
-  <h1>Football Stats</h1>
+  <h1>European Football Stats (2012-2019)</h1>
   <h2>Choose your league</h2>
   <p>Make sure you spell it correctly, available leagues : 'ligue1', 'premiereleague', 'bundesliga', 'laliga', 'seria', 'championsleague', 'europaleague'</p>
 
-  <input list="browsers" type="text" id="fname" name="fname" onchange="cb(this.value)">
+  <input list="browsers" type="text" id="fname" name="fname" value="ligue1" placeholder="select" onchange="cb(this.value, document.getElementById('slider').value)">
     <datalist id="browsers">
       <option value="ligue1">
+      <option value="premiereleague"> 
       <option value="laliga">
       <option value="bundesliga">
       <option value="seria">
@@ -28,6 +36,9 @@
       <option value="europaleague"></option>
     </datalist>
   <a href = "javascript:;" onclick = "this.href='/getPlotCSV/' + document.getElementById('fname').value">Click here to download csv file.</a>
+  <a> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; you can choose the range : </a>
+  <input id="slider" type="range" value="25" min="10" max="30" oninput="this.nextElementSibling.value = this.value" onchange="cb(document.getElementById('fname').value, this.value)">
+  <output>25</output>
 
   <div id="chart" class="chart"></div>
 </body>
