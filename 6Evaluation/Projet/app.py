@@ -7,7 +7,7 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 import json
 
-from scraping import scrap
+from real_time_scrapping import rt_scrap
 from insert_db import insert_db
 
 app = Flask(__name__)
@@ -32,6 +32,12 @@ def redirect_to_base():
 def cb():
     # callback so that the graphs are updated
     return get_strongest_club(request.args.get('data'), int(request.args.get('range')))
+
+@app.route('/callbacksearch', methods=['POST', 'GET'])
+def search():
+    # callback to update players statistics
+    a, b, c, d, e, f, g, h, i = rt_scrap(request.args.get('data'))
+    return {"a": a, "b": b, "c": c, "d": d, "e": e, "f": f, "g": g, "h": h, "i": i}
 
 @app.route('/football')
 def render():
@@ -63,7 +69,7 @@ def redirection():
 
 ### Function that take a league and return a figure with plotly graphs (Bar, Scatter and Table)
 
-def get_strongest_club(ligue='ligue1', size=25):
+def get_strongest_club(ligue='ligue1', size=20):
 
     db = get_db()
 

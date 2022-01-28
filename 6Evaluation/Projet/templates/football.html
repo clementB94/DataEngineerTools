@@ -17,12 +17,32 @@
               }
           });
       }}
+      function search(player) {
+        $.ajax({
+          url: "/callbacksearch",  data: {'data': player}, success: function (result) {
+              $("#stats").text(result.a+":     "+result.b+" matches played,     "+result.c+" Goals,     "+result.d+
+              " Total started,     "+result.e+" Games selected,     "+result.f+" Sub,     "+result.g+
+              " Minutes played,    "+result.h+" Came on,     "+result.i+ " Assists");
+          }, error: function (result){$("#stats").text(" Error, can't find player")}
+        });
+      }
   </script>
 </head>
 
-<body style="font-family:arial, sans-serif">
-  <h1>European Football Stats (2012-2019)</h1>
-  <h2>Choose your league</h2>
+<body style="font-family:montserrat, sans-serif">
+
+  <h1>European Football Stats</h1>
+
+  <h2>Choose a player</h2>
+
+  <input id="searchplayer" type="text" name="searchplayer">
+  <input type="submit" value="search player" onclick="search(document.getElementById('searchplayer').value)">
+  <b id="stats">All time stats</b>
+  <br>
+  <br>
+
+  <h2>Choose a league</h2>
+
   <p>Make sure you spell it correctly, available leagues : 'ligue1', 'premiereleague', 'bundesliga', 'laliga', 'seria', 'championsleague', 'europaleague'</p>
 
   <input list="browsers" type="text" id="fname" name="fname" value="ligue1" placeholder="select" onchange="cb(this.value, document.getElementById('slider').value)">
@@ -37,10 +57,10 @@
     </datalist>
   <a href = "javascript:;" onclick = "this.href='/getPlotCSV/' + document.getElementById('fname').value">Click here to download csv file.</a>
   <a> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; you can choose the range : </a>
-  <input id="slider" type="range" value="25" min="10" max="30" oninput="this.nextElementSibling.value = this.value" onchange="cb(document.getElementById('fname').value, this.value)">
-  <output>25</output>
-
+  <input id="slider" type="range" value="20" min="10" max="30" oninput="this.nextElementSibling.value = this.value" onchange="cb(document.getElementById('fname').value, this.value)">
+  <output>20</output>
   <div id="chart" class="chart"></div>
+  
 </body>
 
 <script>
